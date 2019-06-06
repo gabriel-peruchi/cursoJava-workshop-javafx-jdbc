@@ -34,7 +34,7 @@ public class MainViewControle implements Initializable {
 
 	@FXML
 	public void onMenuItemDepartamentoClick() {
-		System.out.println("Teste departamento click");
+		loadView("/gui/ListaDepartamento.fxml");
 	}
 
 	@FXML
