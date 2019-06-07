@@ -15,6 +15,7 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.VBox;
+import model.servicos.DepartamentoServico;
 
 public class MainViewControle implements Initializable {
 
@@ -34,7 +35,7 @@ public class MainViewControle implements Initializable {
 
 	@FXML
 	public void onMenuItemDepartamentoClick() {
-		loadView("/gui/ListaDepartamento.fxml");
+		loadView2("/gui/ListaDepartamento.fxml");
 	}
 
 	@FXML
@@ -82,4 +83,40 @@ public class MainViewControle implements Initializable {
 		}
 	}
 
+	
+	private synchronized void loadView2(String caminhoAbsoluto) {
+
+		try {
+			
+			//carrega a nova tela
+			FXMLLoader loader = new FXMLLoader(getClass().getResource(caminhoAbsoluto));
+			VBox newVBox = loader.load();
+
+			//captura a cena principal
+			Scene mainScene = Main.getMainScene();
+			
+			//captura o Vbox da tela principal
+			VBox mainVBox =  (VBox) ((ScrollPane) mainScene.getRoot()).getContent();
+			
+			//guarda o menu principal do vbox da tela inicial
+			Node mainMenu =  mainVBox.getChildren().get(0);
+			
+			//limpa os filhos do VBOX da tela principal
+			mainVBox.getChildren().clear();
+			
+			//add o menu principla no vbox principal
+			mainVBox.getChildren().add(mainMenu);
+			
+			//add os filhos do vbox sobre no vbox da tel principal
+			mainVBox.getChildren().addAll(newVBox.getChildren());
+			
+			DepartamentoViewControle controle = loader.getController();
+			controle.setDepartamentoServico(new DepartamentoServico());
+			controle.updateTabelaView();
+			
+
+		} catch (IOException e) {
+			Alertas.showAlert("IO Exception", "Erro carrgando a página", e.getMessage(), AlertType.ERROR);
+		}
+	}
 }
