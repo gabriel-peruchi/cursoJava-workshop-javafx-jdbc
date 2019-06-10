@@ -10,6 +10,7 @@ public class Departamento implements Serializable {
 	private String nome;
 
 	public Departamento() {
+
 	}
 
 	public Departamento(Integer id, String nome) {
@@ -29,8 +30,8 @@ public class Departamento implements Serializable {
 		return nome;
 	}
 
-	public void setNome(String name) {
-		this.nome = name;
+	public void setNome(String nome) {
+		this.nome = nome;
 	}
 
 	@Override
@@ -60,6 +61,7 @@ public class Departamento implements Serializable {
 
 	@Override
 	public String toString() {
-		return "Department [id=" + id + ", name=" + nome + "]";
+		return "Departamento [id=" + id + ", nome=" + nome + "]";
 	}
+
 }
