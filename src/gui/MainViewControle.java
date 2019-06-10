@@ -38,7 +38,7 @@ public class MainViewControle implements Initializable {
 	public void onMenuItemDepartamentoClick() {
 		
 		//mando uma funcao como parametro (expressoes lambda)
-		loadView("/gui/ListaDepartamento.fxml", (DepartamentoViewControle controle) ->{
+		loadView("/gui/ListaDepartamento.fxml", (DepartamentoListaControle controle) ->{
 			controle.setDepartamentoServico(new DepartamentoServico());
 			controle.updateTabelaView();
 			
