@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 import application.Main;
+import gui.listeners.DataChangeListener;
 import gui.util.Alertas;
 import gui.util.Utils;
 import javafx.collections.FXCollections;
@@ -26,7 +27,7 @@ import javafx.stage.Stage;
 import model.entidades.Departamento;
 import model.servicos.DepartamentoServico;
 
-public class DepartamentoListaControle implements Initializable {
+public class DepartamentoListaControle implements Initializable, DataChangeListener {
 
 	private DepartamentoServico servico;
 
@@ -98,6 +99,10 @@ public class DepartamentoListaControle implements Initializable {
 			DepartamentoFormControle controlador = loader.getController();
 			controlador.setDepartamento(departamento);
 			controlador.setDepartamentoServico(new DepartamentoServico());
+			
+			// se inscreve para receber os eventos do departamentoForm
+			controlador.subscribeDataChangeListener(this);
+			
 			controlador.atualizaFormDados();
 
 			// criando um novo palco
@@ -122,6 +127,13 @@ public class DepartamentoListaControle implements Initializable {
 		} catch (IOException e) {
 			Alertas.showAlert("IOException", "Erro ao carregar a tela", e.getMessage(), AlertType.ERROR);
 		}
+
+	}
+
+	@Override
+	public void onDataChange() {
+
+		updateTabelaView();
 
 	}
 

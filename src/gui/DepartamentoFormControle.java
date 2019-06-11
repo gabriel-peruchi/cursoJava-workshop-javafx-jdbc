@@ -1,9 +1,12 @@
 package gui;
 
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
 
 import bd.BdException;
+import gui.listeners.DataChangeListener;
 import gui.util.Alertas;
 import gui.util.Restricoes;
 import gui.util.Utils;
@@ -21,6 +24,9 @@ public class DepartamentoFormControle implements Initializable {
 
 	private Departamento entidade;
 	private DepartamentoServico servico;
+
+	// lista de obejtos que "querem" receber o evento desta tela
+	private List<DataChangeListener> dataChangeListeners = new ArrayList<>();
 
 	@FXML
 	private TextField txtId;
@@ -52,6 +58,10 @@ public class DepartamentoFormControle implements Initializable {
 
 			// salva um departamento
 			servico.salvarAtualizacao(getFormDados());
+			
+			//notifica os obejtos sobre a atualizacao(evento)
+			notificaDataChangeListener();
+			
 			// fecha a janela atual
 			Utils.palcoAtual(evento).close();
 
@@ -59,6 +69,13 @@ public class DepartamentoFormControle implements Initializable {
 			Alertas.showAlert("Erro salvar objeto", null, e.getMessage(), AlertType.ERROR);
 		}
 
+	}
+
+	private void notificaDataChangeListener() {
+		
+		for(DataChangeListener listener : dataChangeListeners) {
+			listener.onDataChange();
+		}
 	}
 
 	@FXML
@@ -69,6 +86,10 @@ public class DepartamentoFormControle implements Initializable {
 	@Override
 	public void initialize(URL url, ResourceBundle rb) {
 		inicializacaoNodes();
+	}
+
+	public void subscribeDataChangeListener(DataChangeListener listener) {
+		dataChangeListeners.add(listener);
 	}
 
 	private void inicializacaoNodes() {
