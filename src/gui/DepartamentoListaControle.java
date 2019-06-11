@@ -97,6 +97,7 @@ public class DepartamentoListaControle implements Initializable {
 
 			DepartamentoFormControle controlador = loader.getController();
 			controlador.setDepartamento(departamento);
+			controlador.setDepartamentoServico(new DepartamentoServico());
 			controlador.atualizaFormDados();
 
 			// criando um novo palco
