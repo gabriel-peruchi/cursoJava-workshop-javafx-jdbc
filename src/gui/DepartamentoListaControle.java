@@ -46,11 +46,13 @@ public class DepartamentoListaControle implements Initializable {
 
 	@FXML
 	public void onBotaoNovoDepartamentoClick(ActionEvent evento) {
-		
+
 		Stage parentStage = Utils.palcoAtual(evento);
 
-		criarDialogoForm(parentStage, "/gui/DepartamentoForm.fxml");
-		
+		Departamento departamento = new Departamento();
+
+		criarDialogoForm(parentStage, "/gui/DepartamentoForm.fxml", departamento);
+
 	}
 
 	public void setDepartamentoServico(DepartamentoServico servico) {
@@ -83,37 +85,43 @@ public class DepartamentoListaControle implements Initializable {
 		tabelaViewDepartamento.setItems(obsList);
 
 	}
-	
-	public void criarDialogoForm(Stage parentStage, String caminhoAbsoluto) {
-		
+
+	public void criarDialogoForm(Stage parentStage, String caminhoAbsoluto, Departamento departamento) {
+
 		try {
-			
-			//carregando a nova tela
+
+			// carregando a nova tela
 			FXMLLoader loader = new FXMLLoader(getClass().getResource(caminhoAbsoluto));
-			
+
 			Pane pane = loader.load();
-			
+
+			DepartamentoFormControle controlador = loader.getController();
+			controlador.setDepartamento(departamento);
+			controlador.atualizaFormDados();
+
 			// criando um novo palco
 			Stage dialagoDtage = new Stage();
 			dialagoDtage.setTitle("Entre com os dados do Departamento");
-			
-			//sua cena vai ser o pane
+
+			// sua cena vai ser o pane
 			dialagoDtage.setScene(new Scene(pane));
 			dialagoDtage.setResizable(false);
-			
-			//palco pai dessa cena
+
+			// palco pai dessa cena
 			dialagoDtage.initOwner(parentStage);
-			
-			//fica travada até você fechar ela
+
+			// fica travada até você fechar ela
 			dialagoDtage.initModality(Modality.WINDOW_MODAL);
-			
-			//mostra a tela
+
+			// mostra a tela
 			dialagoDtage.showAndWait();
-			
+
+			setDepartamentoServico(servico);
+
 		} catch (IOException e) {
 			Alertas.showAlert("IOException", "Erro ao carregar a tela", e.getMessage(), AlertType.ERROR);
 		}
-		
+
 	}
 
 }
