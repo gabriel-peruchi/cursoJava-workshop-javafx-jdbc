@@ -3,9 +3,11 @@ package gui;
 import java.io.IOException;
 import java.net.URL;
 import java.util.List;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
 import application.Main;
+import bd.BdIntegridadeException;
 import gui.listeners.DataChangeListener;
 import gui.util.Alertas;
 import gui.util.Utils;
@@ -19,6 +21,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -47,6 +50,9 @@ public class DepartamentoListaControle implements Initializable, DataChangeListe
 
 	@FXML
 	private TableColumn<Departamento, Departamento> tabelaColunaEDIT;
+
+	@FXML
+	private TableColumn<Departamento, Departamento> tabelaColunaREMOVE;
 
 	private ObservableList<Departamento> obsList;
 
@@ -90,6 +96,7 @@ public class DepartamentoListaControle implements Initializable, DataChangeListe
 		obsList = FXCollections.observableArrayList(list);
 		tabelaViewDepartamento.setItems(obsList);
 		inicializaBotoesEditar();
+		inicializaBotoesRemover();
 
 	}
 
@@ -144,11 +151,11 @@ public class DepartamentoListaControle implements Initializable, DataChangeListe
 	}
 
 	private void inicializaBotoesEditar() {
-		
+
 		tabelaColunaEDIT.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue()));
-		
+
 		tabelaColunaEDIT.setCellFactory(param -> new TableCell<Departamento, Departamento>() {
-			
+
 			private final Button button = new Button("Editar");
 
 			@Override
@@ -158,13 +165,54 @@ public class DepartamentoListaControle implements Initializable, DataChangeListe
 					setGraphic(null);
 					return;
 				}
-				
+
 				setGraphic(button);
-				
+
 				button.setOnAction(
 						event -> criarDialogoForm(Utils.palcoAtual(event), "/gui/DepartamentoForm.fxml", obj));
 			}
 		});
+	}
+
+	private void inicializaBotoesRemover() {
+
+		tabelaColunaREMOVE.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue()));
+		tabelaColunaREMOVE.setCellFactory(param -> new TableCell<Departamento, Departamento>() {
+			private final Button button = new Button("remove");
+
+			@Override
+			protected void updateItem(Departamento obj, boolean empty) {
+				super.updateItem(obj, empty);
+				if (obj == null) {
+					setGraphic(null);
+					return;
+				}
+				setGraphic(button);
+				button.setOnAction(event -> removeEntity(obj));
+			}
+
+		});
+	}
+
+	private void removeEntity(Departamento departamento) {
+
+		Optional<ButtonType> resultado = Alertas.showConfirmacao("Confirmação", "Deseja deletar o departamento? ");
+
+		if (resultado.get() == ButtonType.OK) {
+
+			if (servico == null) {
+				throw new IllegalStateException("O servico esta nulo");
+			}
+
+			try {
+				servico.remove(departamento);
+				updateTabelaView();
+			} catch (BdIntegridadeException e) {
+				Alertas.showAlert("Erro ao remover objeto", null, e.getMessage(), AlertType.ERROR);
+			}
+
+		}
+
 	}
 
 }
