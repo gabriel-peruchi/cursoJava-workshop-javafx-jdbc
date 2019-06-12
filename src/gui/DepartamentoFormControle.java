@@ -3,7 +3,9 @@ package gui;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.Set;
 
 import bd.BdException;
 import gui.listeners.DataChangeListener;
@@ -18,6 +20,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import model.entidades.Departamento;
+import model.exceptions.ValidacaoException;
 import model.servicos.DepartamentoServico;
 
 public class DepartamentoFormControle implements Initializable {
@@ -58,22 +61,24 @@ public class DepartamentoFormControle implements Initializable {
 
 			// salva um departamento
 			servico.salvarAtualizacao(getFormDados());
-			
-			//notifica os obejtos sobre a atualizacao(evento)
+
+			// notifica os obejtos sobre a atualizacao(evento)
 			notificaDataChangeListener();
-			
+
 			// fecha a janela atual
 			Utils.palcoAtual(evento).close();
 
 		} catch (BdException e) {
 			Alertas.showAlert("Erro salvar objeto", null, e.getMessage(), AlertType.ERROR);
+		} catch (ValidacaoException e) {
+			setErrosMesagens(e.getErros());
 		}
 
 	}
 
 	private void notificaDataChangeListener() {
-		
-		for(DataChangeListener listener : dataChangeListeners) {
+
+		for (DataChangeListener listener : dataChangeListeners) {
 			listener.onDataChange();
 		}
 	}
@@ -118,7 +123,32 @@ public class DepartamentoFormControle implements Initializable {
 	// retorna um departamento com os dados da tela
 	public Departamento getFormDados() {
 
-		return new Departamento(Utils.converterParaInteiro(txtId.getText()), txtNome.getText());
+		Departamento departamento = new Departamento();
+
+		ValidacaoException exception = new ValidacaoException("Erro de validação");
+
+		departamento.setId(Utils.converterParaInteiro(txtId.getText()));
+
+		if (txtNome.getText() == null || txtNome.getText().trim().equals("")) {
+			exception.addErro("nome", "O campo não pode ser vazio");
+		}
+
+		if (exception.getErros().size() > 0) {
+			throw exception;
+		}
+
+		return departamento;
 
 	}
+
+	private void setErrosMesagens(Map<String, String> erros) {
+
+		Set<String> filtros = erros.keySet();
+
+		if (filtros.contains("nome")) {
+			labelErroNome.setText(erros.get("nome"));
+		}
+
+	}
+
 }
