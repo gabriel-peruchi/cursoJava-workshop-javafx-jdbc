@@ -9,6 +9,7 @@ import application.Main;
 import gui.listeners.DataChangeListener;
 import gui.util.Alertas;
 import gui.util.Utils;
+import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -18,6 +19,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
+import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -42,6 +44,9 @@ public class DepartamentoListaControle implements Initializable, DataChangeListe
 
 	@FXML
 	private TableColumn<Departamento, String> tabelaColunaNome;
+
+	@FXML
+	private TableColumn<Departamento, Departamento> tabelaColunaEDIT;
 
 	private ObservableList<Departamento> obsList;
 
@@ -84,6 +89,7 @@ public class DepartamentoListaControle implements Initializable, DataChangeListe
 		List<Departamento> list = servico.buscaTodos();
 		obsList = FXCollections.observableArrayList(list);
 		tabelaViewDepartamento.setItems(obsList);
+		inicializaBotoesEditar();
 
 	}
 
@@ -99,10 +105,10 @@ public class DepartamentoListaControle implements Initializable, DataChangeListe
 			DepartamentoFormControle controlador = loader.getController();
 			controlador.setDepartamento(departamento);
 			controlador.setDepartamentoServico(new DepartamentoServico());
-			
+
 			// se inscreve para receber os eventos do departamentoForm
 			controlador.subscribeDataChangeListener(this);
-			
+
 			controlador.atualizaFormDados();
 
 			// criando um novo palco
@@ -135,6 +141,30 @@ public class DepartamentoListaControle implements Initializable, DataChangeListe
 
 		updateTabelaView();
 
+	}
+
+	private void inicializaBotoesEditar() {
+		
+		tabelaColunaEDIT.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue()));
+		
+		tabelaColunaEDIT.setCellFactory(param -> new TableCell<Departamento, Departamento>() {
+			
+			private final Button button = new Button("Editar");
+
+			@Override
+			protected void updateItem(Departamento obj, boolean empty) {
+				super.updateItem(obj, empty);
+				if (obj == null) {
+					setGraphic(null);
+					return;
+				}
+				
+				setGraphic(button);
+				
+				button.setOnAction(
+						event -> criarDialogoForm(Utils.palcoAtual(event), "/gui/DepartamentoForm.fxml", obj));
+			}
+		});
 	}
 
 }

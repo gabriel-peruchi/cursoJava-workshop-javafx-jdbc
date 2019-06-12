@@ -136,6 +136,8 @@ public class DepartamentoFormControle implements Initializable {
 		if (exception.getErros().size() > 0) {
 			throw exception;
 		}
+		
+		departamento.setNome(txtNome.getText());
 
 		return departamento;
 
